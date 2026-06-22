@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js
+.next/
+out/
+
+# Environment variables — NEVER commit these
+.env
+.env.local
+.env.*.local
+
+# Vercel
+.vercel
+
+# Docs & agent config — not for public repo
+Docs/
+ .agent/
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Build artifacts
+*.tgz
+*.tar.gz
+dist/
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo

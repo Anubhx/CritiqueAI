@@ -1,0 +1,12 @@
+# Vercel deployment configuration
+[build]
+  command = "npm run build"
+  output = ".next"
+
+[functions]
+  # Playwright + Chromium needs Node runtime with more memory
+  app/api/capture/route.ts.maxDuration = 60
+  app/api/critique/route.ts.maxDuration = 60
+
+[framework]
+  name = "nextjs"

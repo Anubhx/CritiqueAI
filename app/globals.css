@@ -1,0 +1,193 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── CSS Custom Properties (design tokens) ─── */
+:root {
+  --color-bg: #FAFAF9;
+  --color-surface: #FFFFFF;
+  --color-text-primary: #1C1917;
+  --color-text-secondary: #57534E;
+  --color-border: #E7E5E4;
+  --color-accent: #4338CA;
+  --color-accent-hover: #3730A3;
+  --color-accent-active: #312E81;
+  --color-disabled-bg: #D6D3D1;
+  --color-disabled-text: #A8A29E;
+
+  /* Severity colors */
+  --color-critical-text: #791F1F;
+  --color-critical-bg: #FCEBEB;
+  --color-major-text: #633806;
+  --color-major-bg: #FAEEDA;
+  --color-minor-text: #085041;
+  --color-minor-bg: #E1F5EE;
+  --color-suggestion-text: #27500A;
+  --color-suggestion-bg: #EAF3DE;
+
+  /* Layout */
+  --max-content: 1100px;
+  --padding-desktop: 32px;
+  --padding-mobile: 16px;
+}
+
+/* ─── Base Reset ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Focus Rings — always visible, never removed ─── */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Never use box-shadow for focus — use outline */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ─── Typography Scale ─── */
+.text-h1 {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+}
+
+.text-h2 {
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--color-text-primary);
+}
+
+.text-h3 {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-text-primary);
+}
+
+.text-body {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+}
+
+.text-small {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.text-mono {
+  font-family: 'JetBrains Mono', Menlo, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* ─── Layout Utilities ─── */
+.content-container {
+  max-width: var(--max-content);
+  margin: 0 auto;
+  padding: 0 var(--padding-desktop);
+}
+
+@media (max-width: 768px) {
+  .content-container {
+    padding: 0 var(--padding-mobile);
+  }
+}
+
+/* ─── Severity Badge Classes ─── */
+.badge-critical {
+  color: var(--color-critical-text);
+  background-color: var(--color-critical-bg);
+}
+
+.badge-major {
+  color: var(--color-major-text);
+  background-color: var(--color-major-bg);
+}
+
+.badge-minor {
+  color: var(--color-minor-text);
+  background-color: var(--color-minor-bg);
+}
+
+.badge-suggestion {
+  color: var(--color-suggestion-text);
+  background-color: var(--color-suggestion-bg);
+}
+
+/* ─── Reduced Motion Support ─── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Hero Visual Animations ─── */
+@keyframes float-a {
+  0%, 100% { transform: translateY(0px) rotate(-1deg); }
+  50%       { transform: translateY(-8px) rotate(-1deg); }
+}
+@keyframes float-b {
+  0%, 100% { transform: translateY(0px) rotate(1.5deg); }
+  50%       { transform: translateY(-12px) rotate(1.5deg); }
+}
+@keyframes float-c {
+  0%, 100% { transform: translateY(0px) rotate(-0.5deg); }
+  50%       { transform: translateY(-6px) rotate(-0.5deg); }
+}
+@keyframes slide-up-fade {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes annotation-pop {
+  0%   { opacity: 0; transform: scale(0.85) translateX(-6px); }
+  60%  { opacity: 1; transform: scale(1.03) translateX(0); }
+  100% { opacity: 1; transform: scale(1) translateX(0); }
+}
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(67,56,202,0.3); }
+  50%       { box-shadow: 0 0 0 6px rgba(67,56,202,0); }
+}
+
+.hero-card-a  { animation: float-a 5.5s ease-in-out infinite; }
+.hero-card-b  { animation: float-b 6.8s ease-in-out infinite; }
+.hero-card-c  { animation: float-c 4.9s ease-in-out infinite; }
+
+.hero-slide-1 { animation: slide-up-fade 0.6s ease-out 0.1s both; }
+.hero-slide-2 { animation: slide-up-fade 0.6s ease-out 0.25s both; }
+.hero-slide-3 { animation: slide-up-fade 0.6s ease-out 0.4s both; }
+.hero-slide-4 { animation: slide-up-fade 0.6s ease-out 0.55s both; }
+.hero-slide-5 { animation: slide-up-fade 0.6s ease-out 0.7s both; }
+
+.annotation-pop-1 { animation: annotation-pop 0.5s ease-out 0.9s both; }
+.annotation-pop-2 { animation: annotation-pop 0.5s ease-out 1.1s both; }
+.annotation-pop-3 { animation: annotation-pop 0.5s ease-out 1.3s both; }
+
+.badge-live { animation: badge-pulse 2s ease-in-out 1.5s infinite; }

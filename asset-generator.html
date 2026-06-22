@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap');
+
+    :root {
+      --bg: #FAFAF9;
+      --surface: #FFFFFF;
+      --text-pri: #1C1917;
+      --text-sec: #57534E;
+      --border: #E7E5E4;
+      --accent: #4338CA;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Source Sans 3', sans-serif; background: #eee; padding: 50px; }
+
+    .asset-container {
+      background: var(--surface);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 50px;
+    }
+
+    .title {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text-sec);
+      letter-spacing: 0.1em;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 30px;
+      margin-bottom: 40px;
+    }
+
+    /* ─── Asset 01: Heuristic Review (1200x1600) ─── */
+    #heuristic-review { width: 1200px; height: 1600px; padding: 80px; }
+    .hr-item { border-bottom: 1px solid var(--border); padding-bottom: 40px; margin-bottom: 40px; }
+    .hr-item:last-child { border-bottom: none; }
+    .hr-header { display: flex; align-items: baseline; gap: 20px; margin-bottom: 10px; }
+    .hr-id { font-size: 28px; font-weight: 700; color: var(--accent); }
+    .hr-title { font-size: 32px; font-weight: 600; color: var(--text-pri); }
+    .hr-status { font-size: 24px; font-weight: 600; text-transform: uppercase; margin-bottom: 15px; }
+    .status-met { color: #085041; }
+    .status-partial { color: var(--accent); }
+    .status-not { color: #791F1F; }
+    .hr-desc { font-size: 26px; color: var(--text-sec); line-height: 1.5; }
+
+    /* ─── Asset 02: Accessibility Findings (1200x1600) ─── */
+    #accessibility-findings { width: 1200px; height: 1600px; padding: 80px; }
+    .a11y-item { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); padding: 40px 0; }
+    .a11y-left { display: flex; align-items: baseline; gap: 24px; }
+    .a11y-code { font-size: 32px; font-weight: 700; color: var(--text-pri); }
+    .a11y-title { font-size: 32px; font-weight: 600; color: var(--text-sec); }
+    .a11y-chip { font-size: 24px; font-weight: 700; padding: 8px 24px; border-radius: 8px; border: 2px solid; }
+    .chip-pass { color: #085041; background: #E1F5EE; border-color: #085041; }
+    .chip-fail { color: #791F1F; background: #FCEBEB; border-color: #791F1F; }
+
+    /* ─── Asset 03: Visual Hierarchy (1200x1600) ─── */
+    #visual-hierarchy { width: 1200px; height: 1600px; padding: 80px; }
+    .vh-mockup { width: 100%; height: 600px; background: var(--bg); border: 2px solid var(--border); border-radius: 16px; position: relative; margin-bottom: 60px; padding: 40px; }
+    .vh-wire-header { display: flex; justify-content: space-between; margin-bottom: 60px; }
+    .vh-wire-logo { width: 120px; height: 24px; background: #D6D3D1; border-radius: 4px; }
+    .vh-wire-nav { display: flex; gap: 20px; }
+    .vh-wire-nav-item { width: 60px; height: 16px; background: #E7E5E4; border-radius: 4px; }
+    .vh-wire-h1 { width: 80%; height: 64px; background: #A8A29E; border-radius: 8px; margin-bottom: 30px; }
+    .vh-wire-p { width: 60%; height: 24px; background: #D6D3D1; border-radius: 4px; margin-bottom: 40px; }
+    .vh-wire-cta { width: 160px; height: 48px; background: #78716C; border-radius: 8px; }
+    .vh-wire-img { position: absolute; right: 40px; top: 160px; width: 300px; height: 300px; background: #E7E5E4; border-radius: 12px; }
+    
+    .vh-marker { position: absolute; width: 48px; height: 48px; background: var(--accent); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 4px solid white; }
+    .m1 { top: 120px; left: 80px; }
+    .m2 { top: 240px; left: 80px; }
+    .m3 { top: 320px; left: 80px; }
+    .m4 { top: 280px; right: 180px; }
+
+    .vh-list { display: flex; flex-direction: column; gap: 32px; }
+    .vh-list-item { display: flex; gap: 24px; align-items: baseline; font-size: 28px; color: var(--text-sec); font-weight: 600; }
+    .vh-list-num { font-size: 28px; font-weight: 700; color: var(--accent); width: 40px; }
+
+    /* ─── Asset 04: Recommendation Card (1000x700) ─── */
+    #recommendation-card { width: 1000px; height: 700px; padding: 80px; border-left: 12px solid var(--accent); }
+    .rec-title { font-size: 28px; font-weight: 700; color: var(--accent); letter-spacing: 0.1em; margin-bottom: 50px; }
+    .rec-list { display: flex; flex-direction: column; gap: 40px; }
+    .rec-item { font-size: 36px; font-weight: 600; color: var(--text-pri); display: flex; gap: 24px; align-items: center; }
+    .rec-item::before { content: ''; width: 12px; height: 12px; background: var(--accent); border-radius: 50%; }
+
+    /* ─── Asset 05: Homepage Audit Screen (1800x1200) ─── */
+    #homepage-audit-screen { width: 1800px; height: 1200px; padding: 0; background: var(--bg); display: flex; flex-direction: column; }
+    .ha-nav { height: 100px; background: var(--surface); border-bottom: 2px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 80px; }
+    .ha-logo { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; color: var(--text-pri); }
+    .ha-links { display: flex; gap: 48px; font-size: 20px; font-weight: 600; color: var(--text-sec); }
+    .ha-hero { padding: 120px 80px; display: flex; gap: 80px; }
+    .ha-hero-content { flex: 1; }
+    .ha-h1 { font-family: 'Playfair Display', serif; font-size: 88px; font-weight: 700; color: var(--text-pri); line-height: 1.1; margin-bottom: 32px; }
+    .ha-p { font-size: 28px; color: var(--text-sec); line-height: 1.5; margin-bottom: 60px; max-width: 700px; }
+    .ha-ctas { display: flex; gap: 24px; }
+    .ha-cta-pri { background: var(--text-pri); color: white; padding: 20px 48px; border-radius: 8px; font-size: 24px; font-weight: 600; }
+    .ha-cta-sec { background: transparent; color: var(--text-pri); border: 2px solid var(--border); padding: 20px 48px; border-radius: 8px; font-size: 24px; font-weight: 600; }
+    .ha-img { width: 600px; height: 500px; background: var(--border); border-radius: 16px; }
+
+    /* Overlays for Asset 05 */
+    .overlay-annotation { position: absolute; background: white; border: 2px solid var(--accent); color: var(--accent); font-size: 20px; font-weight: 700; padding: 16px 24px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.04); }
+    .ann-1 { top: 200px; left: 800px; }
+    .ann-2 { top: 620px; left: 450px; }
+    .ann-3 { top: 300px; right: 80px; }
+    
+    .overlay-line { position: absolute; background: var(--accent); }
+    .line-1 { top: 232px; left: 400px; width: 400px; height: 2px; transform: rotate(-10deg); transform-origin: left center; }
+    .line-2 { top: 648px; left: 340px; width: 110px; height: 2px; }
+    .line-3 { top: 332px; right: 380px; width: 300px; height: 2px; transform: rotate(15deg); transform-origin: right center; }
+
+  </style>
+</head>
+<body>
+
+  <!-- Asset 01 -->
+  <div class="asset-container" id="heuristic-review">
+    <div class="title">HEURISTIC REVIEW</div>
+    <div class="hr-item">
+      <div class="hr-header"><span class="hr-id">H1</span><span class="hr-title">Visibility of System Status</span></div>
+      <div class="hr-status status-partial">Partially Met</div>
+      <div class="hr-desc">System feedback is present but not consistently placed.</div>
+    </div>
+    <div class="hr-item">
+      <div class="hr-header"><span class="hr-id">H2</span><span class="hr-title">Match Between System and Real World</span></div>
+      <div class="hr-status status-partial">Partially Met</div>
+      <div class="hr-desc">Some terminology may not align with user mental models.</div>
+    </div>
+    <div class="hr-item">
+      <div class="hr-header"><span class="hr-id">H3</span><span class="hr-title">User Control and Freedom</span></div>
+      <div class="hr-status status-not">Not Met</div>
+      <div class="hr-desc">Lack of clear exits and undo in key flows.</div>
+    </div>
+    <div class="hr-item">
+      <div class="hr-header"><span class="hr-id">H4</span><span class="hr-title">Consistency and Standards</span></div>
+      <div class="hr-status status-partial">Partially Met</div>
+      <div class="hr-desc">Inconsistent patterns across similar components.</div>
+    </div>
+    <div class="hr-item">
+      <div class="hr-header"><span class="hr-id">H5</span><span class="hr-title">Error Prevention</span></div>
+      <div class="hr-status status-not">Not Met</div>
+      <div class="hr-desc">Form allows errors that could be prevented upfront.</div>
+    </div>
+    <div class="hr-item">
+      <div class="hr-header"><span class="hr-id">H6</span><span class="hr-title">Recognition Rather Than Recall</span></div>
+      <div class="hr-status status-met">Met</div>
+    </div>
+    <div class="hr-item">
+      <div class="hr-header"><span class="hr-id">H7</span><span class="hr-title">Flexibility and Efficiency</span></div>
+      <div class="hr-status status-partial">Partially Met</div>
+    </div>
+    <div class="hr-item">
+      <div class="hr-header"><span class="hr-id">H8</span><span class="hr-title">Aesthetic and Minimalist Design</span></div>
+      <div class="hr-status status-met">Met</div>
+    </div>
+    <div class="hr-item">
+      <div class="hr-header"><span class="hr-id">H9</span><span class="hr-title">Error Recovery</span></div>
+      <div class="hr-status status-partial">Partially Met</div>
+    </div>
+    <div class="hr-item">
+      <div class="hr-header"><span class="hr-id">H10</span><span class="hr-title">Help and Documentation</span></div>
+      <div class="hr-status status-not">Not Met</div>
+    </div>
+  </div>
+
+  <!-- Asset 02 -->
+  <div class="asset-container" id="accessibility-findings">
+    <div class="title">ACCESSIBILITY FINDINGS</div>
+    <div class="a11y-item">
+      <div class="a11y-left"><span class="a11y-code">1.4.3</span><span class="a11y-title">Contrast Minimum</span></div>
+      <div class="a11y-chip chip-fail">FAIL</div>
+    </div>
+    <div class="a11y-item">
+      <div class="a11y-left"><span class="a11y-code">2.4.7</span><span class="a11y-title">Focus Visible</span></div>
+      <div class="a11y-chip chip-fail">FAIL</div>
+    </div>
+    <div class="a11y-item">
+      <div class="a11y-left"><span class="a11y-code">1.1.1</span><span class="a11y-title">Non-text Content</span></div>
+      <div class="a11y-chip chip-pass">PASS</div>
+    </div>
+    <div class="a11y-item">
+      <div class="a11y-left"><span class="a11y-code">3.3.2</span><span class="a11y-title">Labels or Instructions</span></div>
+      <div class="a11y-chip chip-fail">FAIL</div>
+    </div>
+    <div class="a11y-item">
+      <div class="a11y-left"><span class="a11y-code">4.1.2</span><span class="a11y-title">Name Role Value</span></div>
+      <div class="a11y-chip chip-pass">PASS</div>
+    </div>
+    <div class="a11y-item">
+      <div class="a11y-left"><span class="a11y-code">2.1.1</span><span class="a11y-title">Keyboard Access</span></div>
+      <div class="a11y-chip chip-fail">FAIL</div>
+    </div>
+  </div>
+
+  <!-- Asset 03 -->
+  <div class="asset-container" id="visual-hierarchy">
+    <div class="title">VISUAL HIERARCHY</div>
+    <div class="vh-mockup">
+      <div class="vh-wire-header">
+        <div class="vh-wire-logo"></div>
+        <div class="vh-wire-nav">
+          <div class="vh-wire-nav-item"></div>
+          <div class="vh-wire-nav-item"></div>
+          <div class="vh-wire-nav-item"></div>
+        </div>
+      </div>
+      <div class="vh-wire-h1"></div>
+      <div class="vh-wire-p"></div>
+      <div class="vh-wire-p" style="width: 40%;"></div>
+      <div class="vh-wire-cta"></div>
+      <div class="vh-wire-img"></div>
+      
+      <div class="vh-marker m1">1</div>
+      <div class="vh-marker m2">2</div>
+      <div class="vh-marker m3">3</div>
+      <div class="vh-marker m4">4</div>
+    </div>
+    <div class="vh-list">
+      <div class="vh-list-item"><span class="vh-list-num">01</span><span>Competing H1 Elements</span></div>
+      <div class="vh-list-item"><span class="vh-list-num">02</span><span>Weak Supporting Text Contrast</span></div>
+      <div class="vh-list-item"><span class="vh-list-num">03</span><span>Low Emphasis on Primary CTA</span></div>
+      <div class="vh-list-item"><span class="vh-list-num">04</span><span>Decorative Image Adding No Value</span></div>
+      <div class="vh-list-item"><span class="vh-list-num">05</span><span>Excessive Spacing</span></div>
+      <div class="vh-list-item"><span class="vh-list-num">06</span><span>Unclear Reading Order</span></div>
+      <div class="vh-list-item"><span class="vh-list-num">07</span><span>Visual Weight Imbalance</span></div>
+      <div class="vh-list-item"><span class="vh-list-num">08</span><span>Weak Content Grouping</span></div>
+    </div>
+  </div>
+
+  <!-- Asset 04 -->
+  <div class="asset-container" id="recommendation-card">
+    <div class="rec-title">RECOMMENDATION</div>
+    <div class="rec-list">
+      <div class="rec-item">Increase contrast on secondary button</div>
+      <div class="rec-item">Strengthen visual hierarchy</div>
+      <div class="rec-item">Reduce competing visual elements</div>
+      <div class="rec-item">Improve CTA prominence</div>
+      <div class="rec-item">Consolidate navigation structure</div>
+    </div>
+  </div>
+
+  <!-- Asset 05 -->
+  <div class="asset-container" id="homepage-audit-screen">
+    <div class="ha-nav">
+      <div class="ha-logo">AcmeCorp</div>
+      <div class="ha-links">
+        <span>Products</span><span>Solutions</span><span>Pricing</span><span>Resources</span>
+      </div>
+    </div>
+    <div class="ha-hero">
+      <div class="ha-hero-content">
+        <div class="ha-h1">Build faster with better tools</div>
+        <div class="ha-p">Everything you need to ship great products with speed and confidence. Join thousands of teams already building the future.</div>
+        <div class="ha-ctas">
+          <div class="ha-cta-pri">Get started</div>
+          <div class="ha-cta-sec">View features</div>
+        </div>
+      </div>
+      <div class="ha-img"></div>
+    </div>
+    
+    <div class="overlay-line line-1"></div>
+    <div class="overlay-annotation ann-1">H1 lacks visual hierarchy</div>
+    
+    <div class="overlay-line line-2"></div>
+    <div class="overlay-annotation ann-2">Low contrast on secondary button</div>
+    
+    <div class="overlay-line line-3"></div>
+    <div class="overlay-annotation ann-3">Image lacks descriptive alt text</div>
+  </div>
+
+</body>
+</html>

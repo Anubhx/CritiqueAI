@@ -1,0 +1,51 @@
+{
+  "name": "critiqueai",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Anubhx/CritiqueAI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Anubhx/CritiqueAI/issues"
+  },
+  "homepage": "https://github.com/Anubhx/CritiqueAI#readme",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@sparticuz/chromium-min": "^147.0.0",
+    "@supabase/supabase-js": "^2.108.2",
+    "@types/node": "^26.0.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "autoprefixer": "^10.5.0",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.9",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "nanoid": "^5.1.15",
+    "next": "^14.2.35",
+    "openai": "^6.44.0",
+    "playwright-core": "^1.61.0",
+    "postcss": "^8.5.15",
+    "prettier": "^3.8.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^6.0.3"
+  },
+  "devDependencies": {
+    "playwright": "^1.61.0"
+  }
+}
