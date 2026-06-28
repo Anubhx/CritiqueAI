@@ -14,7 +14,7 @@ import { GlobalDropCanvas } from '@/components/critique/GlobalDropCanvas';
 import { UrlInputForm } from '@/components/critique/UrlInputForm';
 import { ActionMenu } from '@/components/critique/ActionMenu';
 import { CritiqueReportView } from '@/components/critique/CritiqueReport';
-import { AnimatedBackground, CinematicScanner, Antigravity } from '@/components/motion';
+import { AnimatedBackground, CinematicScanner } from '@/components/motion';
 import type { CritiqueMode, CritiqueReport, CritiqueStatus } from '@/types/critique';
 
 export default function HomePage() {
@@ -55,25 +55,6 @@ export default function HomePage() {
   return (
     <main className="relative min-h-screen bg-[#09090B] flex flex-col items-center justify-center overflow-x-hidden selection:bg-[#06B6D4] selection:text-white">
       <AnimatedBackground />
-      <div className="absolute inset-0 z-[1] pointer-events-none opacity-60">
-        <Antigravity
-          count={300}
-          magnetRadius={6}
-          ringRadius={7}
-          waveSpeed={0.4}
-          waveAmplitude={1}
-          particleSize={1.5}
-          lerpSpeed={0.05}
-          color="#06B6D4"
-          autoAnimate
-          particleVariance={1}
-          rotationSpeed={0}
-          depthFactor={1}
-          pulseSpeed={3}
-          particleShape="capsule"
-          fieldStrength={10}
-        />
-      </div>
 
       {/* ── ERROR TOAST ── */}
       <AnimatePresence>
