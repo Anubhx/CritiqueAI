@@ -1,41 +1,38 @@
 'use client';
 
 /**
- * page.tsx — CritiqueAI main page (V2)
+ * page.tsx — CritiqueAI V3
  *
- * Design intent:
- *   - Ultra-premium, deeply calm, centered experience.
- *   - Removed all SaaS "fluff" (navbars, split layouts, feature pills).
- *   - Staggered, cinematic entrance.
+ * "Quiet Confidence" architecture.
+ * Global drop target. No containers. Seamless layout morphs.
  */
 
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 
-import { UploadZone } from '@/components/critique/UploadZone';
+import { GlobalDropCanvas } from '@/components/critique/GlobalDropCanvas';
 import { UrlInputForm } from '@/components/critique/UrlInputForm';
-import { ModeSelector } from '@/components/critique/ModeSelector';
+import { ActionMenu } from '@/components/critique/ActionMenu';
 import { CritiqueReportView } from '@/components/critique/CritiqueReport';
-import { StatusIndicator } from '@/components/critique/StatusIndicator';
-import { AnimatedBackground, FadeIn, SlideUp, ScaleIn } from '@/components/motion';
+import { AnimatedBackground, CinematicScanner } from '@/components/motion';
 import type { CritiqueMode, CritiqueReport, CritiqueStatus } from '@/types/critique';
 
-type InputTab = 'upload' | 'url';
-
 export default function HomePage() {
-  const [activeTab, setActiveTab] = useState<InputTab>('upload');
   const [mode, setMode]           = useState<CritiqueMode>('full_audit');
   const [status, setStatus]       = useState<CritiqueStatus>('idle');
   const [error, setError]         = useState<string | null>(null);
   const [report, setReport]       = useState<CritiqueReport | null>(null);
   const [imageBase64, setImageBase64] = useState<string>('');
   const [mimeType, setMimeType]   = useState<string>('image/png');
+  const [showUrlInput, setShowUrlInput] = useState(false);
   const reduced = useReducedMotion();
 
   const isAnalyzing = ['capturing', 'uploading', 'analyzing', 'structuring'].includes(status);
 
   const handleAnalysisStart = useCallback((s: CritiqueStatus) => {
-    setStatus(s); setError(null); setReport(null);
+    setStatus(s); 
+    setError(null); 
+    setReport(null);
   }, []);
 
   const handleSuccess = useCallback((incoming: unknown, img: string, mime: string) => {
@@ -43,35 +40,137 @@ export default function HomePage() {
     setImageBase64(img);
     setMimeType(mime);
     setStatus('done');
+    setShowUrlInput(false);
   }, []);
 
   const handleError   = useCallback((msg: string) => { setError(msg); setStatus('error'); }, []);
   const handleReset   = useCallback(() => {
-    setStatus('idle'); setError(null); setReport(null); setImageBase64('');
+    setStatus('idle'); 
+    setError(null); 
+    setReport(null); 
+    setImageBase64('');
+    setShowUrlInput(false);
   }, []);
 
   return (
-    <main className="relative min-h-screen bg-[#09090B] flex flex-col items-center overflow-x-hidden selection:bg-[#06B6D4] selection:text-white">
+    <main className="relative min-h-screen bg-[#09090B] flex flex-col items-center justify-center overflow-x-hidden selection:bg-[#06B6D4] selection:text-white">
       <AnimatedBackground />
 
-      {/* ── REPORT STATE ── */}
+      {/* ── ERROR TOAST ── */}
+      <AnimatePresence>
+        {status === 'error' && error && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: -20, x: '-50%' }}
+            className="fixed top-6 left-1/2 z-50 px-6 py-3 rounded-full bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)] backdrop-blur-md shadow-2xl"
+          >
+            <p className="text-[14px] text-[#FCA5A5] font-medium flex items-center gap-2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              {error}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── URL INPUT OVERLAY ── */}
+      <AnimatePresence>
+        {showUrlInput && status === 'idle' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="absolute bottom-24 w-full max-w-md z-40 px-6"
+          >
+            <div className="p-4 rounded-2xl bg-[rgba(17,17,19,0.8)] backdrop-blur-xl border border-[rgba(255,255,255,0.08)] shadow-2xl relative">
+              <button 
+                onClick={() => setShowUrlInput(false)}
+                className="absolute top-2 right-2 p-2 text-[#71717A] hover:text-[#FAFAFA] transition-colors"
+                aria-label="Close URL input"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+              <UrlInputForm mode={mode} onAnalysisStart={handleAnalysisStart} onSuccess={handleSuccess} onError={handleError} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── MAIN VIEWS ── */}
       <AnimatePresence mode="wait">
+        
+        {/* IDLE / GLOBAL CANVAS */}
+        {status === 'idle' && (
+          <motion.div 
+            key="canvas" 
+            className="absolute inset-0 z-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={reduced ? { opacity: 0 } : { opacity: 0, filter: 'blur(10px)', scale: 0.95 }}
+            transition={{ duration: 0.4 }}
+          >
+            <GlobalDropCanvas 
+              mode={mode} 
+              onAnalysisStart={handleAnalysisStart} 
+              onSuccess={handleSuccess} 
+              onError={handleError}
+              onUrlInputTrigger={() => setShowUrlInput(true)}
+            />
+          </motion.div>
+        )}
+
+        {/* SCANNING STATE (Authentic wait) */}
+        {isAnalyzing && (
+          <motion.div
+            key="scanning"
+            className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+             <div className="relative w-24 h-24 rounded-2xl border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.02)] overflow-hidden shadow-2xl">
+               <CinematicScanner isScanning={true} />
+             </div>
+             <motion.p 
+               animate={{ opacity: [0.5, 1, 0.5] }} 
+               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+               className="text-[14px] text-[#A1A1AA] font-mono tracking-wider uppercase"
+             >
+               {status === 'capturing' ? 'Capturing URL...' : status === 'uploading' ? 'Uploading...' : 'Analyzing Interface...'}
+             </motion.p>
+          </motion.div>
+        )}
+
+        {/* DONE / REPORT VIEW */}
         {status === 'done' && report && (
           <motion.div
             key="report"
-            className="content-container py-16 w-full relative z-10"
-            initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.98, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, scale: 0.98, filter: 'blur(10px)' }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} // smooth apple-like spring curve
+            className="content-container py-16 w-full relative z-30 min-h-screen"
+            initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.98, filter: 'blur(10px)', y: 20 }}
+            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)', y: 0 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} 
           >
-            {/* Back button */}
+            {/* Top Toolbar */}
             <motion.div
-              className="flex justify-center mb-12"
+              className="flex justify-between items-center mb-12"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}
             >
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center"
+                     style={{
+                       background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%)',
+                       border: '1px solid rgba(255,255,255,0.08)'
+                     }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FAFAFA" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                </div>
+                <span className="text-[#FAFAFA] font-medium text-[14px]">CritiqueAI</span>
+              </div>
+              
               <button
                 onClick={handleReset}
                 className="flex items-center gap-2 px-4 py-2 rounded-full border border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.03)] hover:bg-[rgba(255,255,255,0.06)] text-[13px] text-[#A1A1AA] hover:text-white transition-colors cursor-pointer"
@@ -83,125 +182,16 @@ export default function HomePage() {
                 New critique
               </button>
             </motion.div>
+
             <CritiqueReportView report={report} imageBase64={imageBase64} mimeType={mimeType} />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ── HERO + INPUT STATE ── */}
-      <AnimatePresence mode="wait">
-        {status !== 'done' && (
-          <motion.div
-            key="hero"
-            className="flex-1 flex flex-col items-center justify-center w-full px-5 md:px-8 py-20 relative z-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
-            transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-          >
-            {/* Centered Brand Mark */}
-            <FadeIn delay={0.1}>
-              <div className="w-10 h-10 rounded-xl mb-8 flex items-center justify-center mx-auto"
-                   style={{
-                     background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%)',
-                     border: '1px solid rgba(255,255,255,0.08)',
-                     boxShadow: '0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)',
-                   }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FAFAFA" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="8" />
-                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-              </div>
-            </FadeIn>
-
-            {/* Headline */}
-            <SlideUp delay={0.2} className="text-center">
-              <h1 className="text-[40px] md:text-[56px] font-bold text-[#FAFAFA] leading-[1.05] tracking-tight mb-4 max-w-[600px] mx-auto">
-                Every Interface Has Flaws. <span className="text-transparent bg-clip-text bg-gradient-to-br from-[#67E8F9] to-[#0891B2]">Find Yours.</span>
-              </h1>
-            </SlideUp>
-
-            {/* Subheading */}
-            <SlideUp delay={0.3} className="text-center">
-              <p className="text-[16px] md:text-[18px] text-[#A1A1AA] leading-relaxed max-w-[500px] mx-auto mb-10">
-                Stop guessing. Upload a screenshot and get actionable UX feedback grounded in heuristics.
-              </p>
-            </SlideUp>
-
-            {/* Main Input Box */}
-            <ScaleIn delay={0.4} className="w-full max-w-[540px]">
-              <div className="rounded-3xl p-[1px] relative overflow-hidden">
-                {/* Subtle border wrap */}
-                <div className="absolute inset-0 bg-gradient-to-b from-[rgba(255,255,255,0.15)] to-[rgba(255,255,255,0.02)] pointer-events-none rounded-3xl" />
-                
-                <div className="relative rounded-[23px] bg-[rgba(17,17,19,0.7)] backdrop-blur-xl p-2 pb-5 flex flex-col gap-4">
-                  {/* Tabs */}
-                  <div className="flex items-center gap-1 p-1 rounded-2xl bg-[rgba(0,0,0,0.4)] border border-[rgba(255,255,255,0.04)] w-max mx-auto mt-2">
-                    {(['upload', 'url'] as const).map((tab) => (
-                      <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        disabled={isAnalyzing}
-                        className={`relative px-5 py-1.5 rounded-xl text-[13px] font-medium transition-colors ${
-                          activeTab === tab ? 'text-white' : 'text-[#71717A] hover:text-[#A1A1AA]'
-                        } disabled:opacity-50`}
-                      >
-                        {activeTab === tab && (
-                          <motion.div
-                            layoutId="activeTab"
-                            className="absolute inset-0 bg-[rgba(255,255,255,0.08)] rounded-xl border border-[rgba(255,255,255,0.05)]"
-                            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                          />
-                        )}
-                        <span className="relative z-10">{tab === 'upload' ? 'Upload Image' : 'Paste URL'}</span>
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="px-4 pt-2">
-                    <AnimatePresence mode="wait">
-                      {activeTab === 'upload' ? (
-                        <motion.div key="upload" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
-                          <UploadZone mode={mode} onAnalysisStart={handleAnalysisStart} onSuccess={handleSuccess} onError={handleError} />
-                        </motion.div>
-                      ) : (
-                        <motion.div key="url" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
-                          <UrlInputForm mode={mode} onAnalysisStart={handleAnalysisStart} onSuccess={handleSuccess} onError={handleError} />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
-                    <div className="my-5 h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,255,255,0.06)] to-transparent" />
-                    
-                    <ModeSelector selected={mode} onChange={setMode} disabled={isAnalyzing} />
-
-                    <AnimatePresence>
-                      {isAnalyzing && (
-                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mt-5">
-                          <StatusIndicator status={status} />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
-                    <AnimatePresence>
-                      {status === 'error' && error && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0 }}
-                          className="mt-4 p-4 rounded-xl bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)] text-center"
-                        >
-                          <p className="text-[13px] text-[#FCA5A5] font-medium">{error}</p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </div>
-              </div>
-            </ScaleIn>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* ── ACTION MENU (Gear icon for settings) ── */}
+      {status === 'idle' && (
+        <ActionMenu mode={mode} onModeChange={setMode} disabled={isAnalyzing} />
+      )}
     </main>
   );
 }

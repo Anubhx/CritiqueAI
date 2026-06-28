@@ -257,3 +257,4 @@ export const AnimatedBackground: React.FC = () => {
     </div>
   );
 };
+export { CinematicScanner } from './CinematicScanner';
