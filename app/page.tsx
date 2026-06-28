@@ -14,7 +14,7 @@ import { GlobalDropCanvas } from '@/components/critique/GlobalDropCanvas';
 import { UrlInputForm } from '@/components/critique/UrlInputForm';
 import { ActionMenu } from '@/components/critique/ActionMenu';
 import { CritiqueReportView } from '@/components/critique/CritiqueReport';
-import { AnimatedBackground, CinematicScanner } from '@/components/motion';
+import { CinematicScanner } from '@/components/motion';
 import type { CritiqueMode, CritiqueReport, CritiqueStatus } from '@/types/critique';
 
 export default function HomePage() {
@@ -53,8 +53,28 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="relative min-h-screen bg-[#09090B] flex flex-col items-center justify-center overflow-x-hidden selection:bg-[#06B6D4] selection:text-white">
-      <AnimatedBackground />
+    <main className="relative min-h-screen bg-[#000000] flex flex-col items-center justify-center overflow-x-hidden selection:bg-[#06B6D4] selection:text-white">
+      {/* ── GLOBAL DECORATIONS ── */}
+      <div 
+        className="fixed z-50 font-mono text-white pointer-events-none"
+        style={{ top: 24, left: 24, fontSize: 13, opacity: 0.35 }}
+      >
+        CritiqueAI
+      </div>
+      
+      <div 
+        className="fixed z-50 text-white pointer-events-none"
+        style={{ 
+          bottom: 24, 
+          left: '50%', 
+          transform: 'translateX(-50%)', 
+          fontSize: 12, 
+          opacity: 0.22,
+          letterSpacing: '0.03em'
+        }}
+      >
+        ⌘V to paste from clipboard
+      </div>
 
       {/* ── ERROR TOAST ── */}
       <AnimatePresence>

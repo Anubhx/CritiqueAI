@@ -9,7 +9,6 @@
 
 import React, { useCallback, useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Antigravity } from '@/components/motion';
 import type { CritiqueMode, CritiqueStatus } from '@/types/critique';
 
 interface GlobalDropCanvasProps {
@@ -156,7 +155,9 @@ export const GlobalDropCanvas: React.FC<GlobalDropCanvasProps> = ({
         tabIndex={-1}
       />
 
-      {/* Background Dim/Glow on Drag Over */}
+
+
+      {/* Background Glow on Drag Over */}
       <AnimatePresence>
         {dragOver && (
           <motion.div
@@ -164,42 +165,13 @@ export const GlobalDropCanvas: React.FC<GlobalDropCanvasProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="absolute inset-0 bg-[rgba(6,182,212,0.02)] pointer-events-none"
-            style={{ boxShadow: 'inset 0 0 100px rgba(6,182,212,0.1)' }}
-          >
-            <div className="absolute inset-0 z-0 opacity-80 mix-blend-screen">
-              <Antigravity
-                count={300}
-                magnetRadius={8}
-                ringRadius={9}
-                waveSpeed={0.4}
-                waveAmplitude={1}
-                particleSize={1.5}
-                lerpSpeed={0.05}
-                color="#06B6D4"
-                autoAnimate
-                particleVariance={1}
-                rotationSpeed={0.2}
-                depthFactor={1}
-                pulseSpeed={3}
-                particleShape="capsule"
-                fieldStrength={10}
-              />
-            </div>
-          </motion.div>
+            className="absolute inset-0 pointer-events-none border border-[rgba(6,182,212,0.4)]"
+            style={{ background: 'radial-gradient(circle at center, rgba(6,182,212,0.12) 0%, transparent 600px)' }}
+          />
         )}
       </AnimatePresence>
 
-      {/* Subtle idle gradient behind the text */}
-      <div 
-        className="absolute inset-0 pointer-events-none z-0 transition-opacity duration-500" 
-        style={{ 
-          background: 'radial-gradient(circle at center, rgba(12,12,14,0.4) 0%, rgba(0,0,0,1) 100%)',
-          opacity: dragOver ? 0 : 0.08 
-        }} 
-      />
-
-      <div className="relative z-10 flex flex-col items-center justify-center">
+      <div className="relative z-10 flex flex-col items-center justify-center -translate-y-10">
         {/* Primary Affordance */}
         <motion.h1 
           className="text-[32px] md:text-[40px] font-medium text-[#FAFAFA] tracking-tight mb-6"
@@ -234,6 +206,16 @@ export const GlobalDropCanvas: React.FC<GlobalDropCanvasProps> = ({
             paste website URL
           </button>
         </motion.div>
+
+        {/* Hint Text */}
+        <motion.p
+          className="text-white font-normal pointer-events-none mt-[32px] text-center"
+          style={{ fontSize: 13 }}
+          animate={{ opacity: dragOver ? 0 : 0.28, y: dragOver ? 10 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          Checks contrast, hierarchy, tap targets, and 9 other heuristics
+        </motion.p>
       </div>
     </motion.div>
   );
