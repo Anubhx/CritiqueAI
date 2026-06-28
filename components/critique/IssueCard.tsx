@@ -20,6 +20,46 @@ export const IssueCard: React.FC<IssueCardProps> = ({
 }) => {
   const reduced = useReducedMotion();
 
+  // Semantic Sizing logic
+  let paddingClass = 'p-4';
+  let titleClass = 'text-[14px]';
+  let bodyClass = 'text-[13px]';
+  let borderClass = 'border-[rgba(255,255,255,0.07)]';
+  let bgClass = 'bg-[rgba(255,255,255,0.02)]';
+
+  switch (issue.severity) {
+    case 'critical':
+      paddingClass = 'p-6';
+      titleClass = 'text-[16px] font-bold';
+      bodyClass = 'text-[14px]';
+      borderClass = 'border-[rgba(239,68,68,0.2)]';
+      bgClass = 'bg-[rgba(239,68,68,0.05)]';
+      break;
+    case 'major':
+      paddingClass = 'p-5';
+      titleClass = 'text-[15px] font-semibold';
+      bodyClass = 'text-[13.5px]';
+      break;
+    case 'minor':
+      paddingClass = 'p-4';
+      titleClass = 'text-[14px] font-medium';
+      bodyClass = 'text-[13px]';
+      break;
+    case 'suggestion':
+      paddingClass = 'p-3 py-2.5';
+      titleClass = 'text-[13px] font-normal';
+      bodyClass = 'text-[12px] opacity-80';
+      borderClass = 'border-transparent';
+      bgClass = 'bg-transparent';
+      break;
+  }
+
+  // Highlight override
+  if (isHighlighted) {
+    borderClass = 'border-[rgba(6,182,212,0.50)] shadow-[0_0_0_1px_rgba(6,182,212,0.20)]';
+    bgClass = 'bg-[rgba(6,182,212,0.06)]';
+  }
+
   return (
     <motion.article
       id={`issue-${issue.id}`}
@@ -37,12 +77,13 @@ export const IssueCard: React.FC<IssueCardProps> = ({
         y: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] },
       }}
       className={[
-        'relative rounded-xl border p-4 cursor-default',
+        'relative rounded-xl border cursor-default',
         'transition-colors duration-200',
-        isHighlighted
-          ? 'border-[rgba(124,58,237,0.50)] bg-[rgba(124,58,237,0.06)] shadow-[0_0_0_1px_rgba(124,58,237,0.20)]'
-          : 'border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.02)]',
-        'hover:border-[rgba(255,255,255,0.12)] hover:bg-[rgba(255,255,255,0.03)]',
+        paddingClass,
+        borderClass,
+        bgClass,
+        !isHighlighted && issue.severity !== 'suggestion' ? 'hover:border-[rgba(255,255,255,0.12)] hover:bg-[rgba(255,255,255,0.03)]' : '',
+        !isHighlighted && issue.severity === 'suggestion' ? 'hover:bg-[rgba(255,255,255,0.02)]' : ''
       ].join(' ')}
       aria-label={`Issue ${index + 1}: ${issue.title}, severity ${issue.severity}`}
     >
@@ -60,7 +101,7 @@ export const IssueCard: React.FC<IssueCardProps> = ({
           <div className="flex flex-wrap items-center gap-2">
             <SeverityPill severity={issue.severity} />
           </div>
-          <h3 className="text-[14px] font-semibold text-[#E4E4E7] leading-snug">
+          <h3 className={`${titleClass} text-[#E4E4E7] leading-snug`}>
             {issue.title}
           </h3>
         </div>
@@ -74,18 +115,20 @@ export const IssueCard: React.FC<IssueCardProps> = ({
       </div>
 
       {/* Body — What / Why / Fix */}
-      <dl className="ml-7 space-y-2.5">
+      <dl className={`ml-7 space-y-2.5 ${bodyClass}`}>
         <div>
           <dt className="text-label text-[#52525B] mb-0.5">What</dt>
-          <dd className="text-[13px] text-[#A1A1AA] leading-relaxed">{issue.what}</dd>
+          <dd className="text-[#A1A1AA] leading-relaxed">{issue.what}</dd>
         </div>
+        {issue.severity !== 'suggestion' && (
+          <div>
+            <dt className="text-label text-[#52525B] mb-0.5">Why it matters</dt>
+            <dd className="text-[#A1A1AA] leading-relaxed">{issue.why}</dd>
+          </div>
+        )}
         <div>
-          <dt className="text-label text-[#52525B] mb-0.5">Why it matters</dt>
-          <dd className="text-[13px] text-[#A1A1AA] leading-relaxed">{issue.why}</dd>
-        </div>
-        <div>
-          <dt className="text-label text-[#7C3AED] mb-0.5">Fix</dt>
-          <dd className="text-[13px] text-[#E4E4E7] leading-relaxed">{issue.fix}</dd>
+          <dt className="text-label text-[#06B6D4] mb-0.5">Fix</dt>
+          <dd className="text-[#E4E4E7] leading-relaxed">{issue.fix}</dd>
         </div>
       </dl>
     </motion.article>

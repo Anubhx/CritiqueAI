@@ -95,10 +95,10 @@ export const UrlInputForm: React.FC<UrlInputFormProps> = ({
               style={{
                 background: validationError
                   ? 'rgba(239,68,68,0.15)'
-                  : 'rgba(124,58,237,0.12)',
+                  : 'rgba(6,182,212,0.12)',
                 boxShadow: validationError
                   ? '0 0 0 1.5px rgba(239,68,68,0.50)'
-                  : '0 0 0 1.5px rgba(124,58,237,0.50)',
+                  : '0 0 0 1.5px rgba(6,182,212,0.50)',
                 borderRadius: '12px',
               }}
               aria-hidden="true"

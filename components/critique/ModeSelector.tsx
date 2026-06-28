@@ -61,7 +61,7 @@ export const ModeSelector: React.FC<ModeSelectorProps> = ({
                 'relative flex flex-col gap-1 p-3 rounded-xl cursor-pointer',
                 'transition-colors duration-150 group',
                 isSelected
-                  ? 'bg-[rgba(124,58,237,0.12)] border border-[rgba(124,58,237,0.40)]'
+                  ? 'bg-[rgba(6,182,212,0.12)] border border-[rgba(6,182,212,0.40)]'
                   : 'bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.07)]',
                 'hover:border-[rgba(255,255,255,0.14)] hover:bg-[rgba(255,255,255,0.04)]',
                 disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
@@ -81,7 +81,7 @@ export const ModeSelector: React.FC<ModeSelectorProps> = ({
               {isSelected && (
                 <motion.span
                   layoutId="mode-indicator"
-                  className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-[#A78BFA]"
+                  className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full bg-[#38BDF8]"
                   initial={false}
                   transition={reduced ? { duration: 0 } : { type: 'spring', stiffness: 500, damping: 35 }}
                   aria-hidden="true"
@@ -90,7 +90,7 @@ export const ModeSelector: React.FC<ModeSelectorProps> = ({
 
               {/* Icon + Label row */}
               <div className="flex items-center gap-2">
-                <span className={isSelected ? 'text-[#A78BFA]' : 'text-[#52525B] group-hover:text-[#71717A]'}>
+                <span className={isSelected ? 'text-[#38BDF8]' : 'text-[#52525B] group-hover:text-[#71717A]'}>
                   {MODE_ICONS[mode]}
                 </span>
                 <span
@@ -108,7 +108,7 @@ export const ModeSelector: React.FC<ModeSelectorProps> = ({
               </span>
 
               {/* Time estimate */}
-              <span className={`text-mono text-[11px] pl-[22px] mt-0.5 ${isSelected ? 'text-[#7C3AED]' : 'text-[#3F3F46]'}`}>
+              <span className={`text-mono text-[11px] pl-[22px] mt-0.5 ${isSelected ? 'text-[#06B6D4]' : 'text-[#3F3F46]'}`}>
                 {timeEstimate}
               </span>
             </label>

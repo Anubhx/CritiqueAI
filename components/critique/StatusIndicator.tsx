@@ -56,7 +56,7 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status }) => {
         <motion.div
           className="absolute inset-x-0 h-[2px] pointer-events-none"
           style={{
-            background: 'linear-gradient(90deg, transparent 0%, rgba(124,58,237,0.6) 50%, transparent 100%)',
+            background: 'linear-gradient(90deg, transparent 0%, rgba(6,182,212,0.6) 50%, transparent 100%)',
           }}
           animate={{ top: ['-2px', 'calc(100% + 2px)'] }}
           transition={{ duration: 2.4, ease: 'linear', repeat: Infinity }}
@@ -80,21 +80,21 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status }) => {
                       animate={{ scale: 1, rotate: 0 }}
                       exit={{ scale: 0 }}
                       transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                      className="w-5 h-5 rounded-full bg-[rgba(124,58,237,0.20)] border border-[rgba(124,58,237,0.40)] flex items-center justify-center"
+                      className="w-5 h-5 rounded-full bg-[rgba(6,182,212,0.20)] border border-[rgba(6,182,212,0.40)] flex items-center justify-center"
                     >
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <polyline points="20 6 9 17 4 12" />
                       </svg>
                     </motion.div>
                   ) : state === 'active' ? (
                     <motion.div
                       key="active"
-                      className="w-5 h-5 rounded-full border border-[rgba(124,58,237,0.60)] flex items-center justify-center"
-                      animate={reduced ? {} : { boxShadow: ['0 0 0 0 rgba(124,58,237,0.4)', '0 0 0 6px rgba(124,58,237,0)', '0 0 0 0 rgba(124,58,237,0)'] }}
+                      className="w-5 h-5 rounded-full border border-[rgba(6,182,212,0.60)] flex items-center justify-center"
+                      animate={reduced ? {} : { boxShadow: ['0 0 0 0 rgba(6,182,212,0.4)', '0 0 0 6px rgba(6,182,212,0)', '0 0 0 0 rgba(6,182,212,0)'] }}
                       transition={{ duration: 1.5, repeat: Infinity }}
                     >
                       <motion.div
-                        className="w-2 h-2 rounded-full bg-[#7C3AED]"
+                        className="w-2 h-2 rounded-full bg-[#06B6D4]"
                         animate={reduced ? {} : { scale: [1, 1.2, 1] }}
                         transition={{ duration: 1, repeat: Infinity }}
                       />
@@ -115,7 +115,7 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status }) => {
                   >
                     <motion.div
                       className="w-full"
-                      style={{ backgroundColor: 'rgba(124,58,237,0.4)' }}
+                      style={{ backgroundColor: 'rgba(6,182,212,0.4)' }}
                       initial={{ height: 0 }}
                       animate={{ height: state === 'complete' ? '100%' : '0%' }}
                       transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -137,7 +137,7 @@ export const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status }) => {
                   <motion.p
                     initial={reduced ? {} : { opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
-                    className="text-[11px] text-[#7C3AED] mt-0.5"
+                    className="text-[11px] text-[#06B6D4] mt-0.5"
                   >
                     {step.sub}
                   </motion.p>

@@ -82,7 +82,7 @@ export const CritiqueReportView: React.FC<CritiqueReportViewProps> = ({
             UX Critique
           </h2>
           {/* Mode badge */}
-          <span className="text-[11px] font-semibold tracking-wide px-2.5 py-1 rounded-full bg-[rgba(124,58,237,0.12)] border border-[rgba(124,58,237,0.30)] text-[#A78BFA]">
+          <span className="text-[11px] font-semibold tracking-wide px-2.5 py-1 rounded-full bg-[rgba(6,182,212,0.12)] border border-[rgba(6,182,212,0.30)] text-[#06B6D4]">
             {MODE_LABELS[report.mode] ?? report.mode}
           </span>
           {/* Issue count */}
@@ -188,12 +188,12 @@ export const CritiqueReportView: React.FC<CritiqueReportViewProps> = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.65, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="rounded-xl border border-[rgba(124,58,237,0.30)] bg-[rgba(124,58,237,0.06)] p-4"
-            style={{ boxShadow: '0 0 20px rgba(124,58,237,0.08)' }}
+            className="rounded-xl border border-[rgba(6,182,212,0.30)] bg-[rgba(6,182,212,0.06)] p-4"
+            style={{ boxShadow: '0 0 20px rgba(6,182,212,0.08)' }}
           >
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-label text-[#7C3AED]">Priority fix</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#7C3AED] animate-pulse-ring" aria-hidden="true" />
+              <span className="text-label text-[#06B6D4]">Priority fix</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#06B6D4] animate-pulse-ring" aria-hidden="true" />
             </div>
             <p className="text-[14px] text-[#E4E4E7] leading-relaxed">{report.priority_fix}</p>
           </motion.div>

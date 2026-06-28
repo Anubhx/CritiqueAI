@@ -1,255 +1,128 @@
 'use client';
 
 /**
- * motion/index.tsx — Premium animation primitives
+ * motion/index.tsx — Premium V2 animation primitives
  *
  * Philosophy:
- *   Every animation here exists because it improves comprehension, signals
- *   state, or communicates hierarchy. Nothing is decorative for its own sake.
- *
- * Reduced motion: All components respect prefers-reduced-motion automatically
- *   via Framer Motion's built-in `useReducedMotion` hook.
+ *   - Cinematic, calm, intentional motion.
+ *   - Mouse interactions create light and depth, not movement (VisionOS style).
+ *   - Reduced motion is always respected.
  */
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   motion,
   useReducedMotion,
   useMotionValue,
   useTransform,
   useSpring,
+  useMotionTemplate,
   type HTMLMotionProps,
   type Variants,
 } from 'framer-motion';
 
-// ─── Shared easing curves (inspired by Apple/Linear) ────────────────────────
-
 export const ease = {
   smooth: [0.25, 0.46, 0.45, 0.94] as const,
-  snappy: [0.36, 0.66, 0.04, 1] as const,     // feels like native iOS
+  snappy: [0.36, 0.66, 0.04, 1] as const,
   spring: { type: 'spring', stiffness: 400, damping: 30 } as const,
-  springGentle: { type: 'spring', stiffness: 200, damping: 25 } as const,
-  springBouncy: { type: 'spring', stiffness: 500, damping: 35 } as const,
 };
 
-// ─── FadeUp ─────────────────────────────────────────────────────────────────
-// Purpose: Reveals content as it enters the viewport. The upward motion
-//          signals "freshly appeared" without being theatrical.
+// ─── Entrance Animations ──────────────────────────────────────────────────
 
-interface FadeUpProps extends HTMLMotionProps<'div'> {
-  delay?: number;
-  duration?: number;
-  distance?: number;
-  children: React.ReactNode;
-}
-
-export const FadeUp: React.FC<FadeUpProps> = ({
-  delay = 0,
-  duration = 0.55,
-  distance = 20,
-  children,
-  ...props
-}) => {
+export const FadeIn: React.FC<HTMLMotionProps<'div'> & { delay?: number; duration?: number }> = ({ delay = 0, duration = 0.5, children, ...props }) => {
   const reduced = useReducedMotion();
   return (
-    <motion.div
-      initial={reduced ? { opacity: 0 } : { opacity: 0, y: distance }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration, delay, ease: ease.smooth }}
-      {...props}
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration, delay, ease: ease.smooth }} {...props}>
       {children}
     </motion.div>
   );
 };
 
-// ─── ScrollReveal ────────────────────────────────────────────────────────────
-// Purpose: Triggers FadeUp when element enters the viewport. Used for
-//          below-the-fold sections so animations only fire when relevant.
-
-interface ScrollRevealProps extends HTMLMotionProps<'div'> {
-  delay?: number;
-  distance?: number;
-  children: React.ReactNode;
-}
-
-export const ScrollReveal: React.FC<ScrollRevealProps> = ({
-  delay = 0,
-  distance = 24,
-  children,
-  ...props
-}) => {
+export const SlideUp: React.FC<HTMLMotionProps<'div'> & { delay?: number; distance?: number; duration?: number }> = ({ delay = 0, distance = 20, duration = 0.6, children, ...props }) => {
   const reduced = useReducedMotion();
   return (
-    <motion.div
-      initial={reduced ? { opacity: 0 } : { opacity: 0, y: distance }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.6, delay, ease: ease.smooth }}
-      {...props}
-    >
+    <motion.div initial={reduced ? { opacity: 0 } : { opacity: 0, y: distance }} animate={{ opacity: 1, y: 0 }} transition={{ duration, delay, ease: ease.smooth }} {...props}>
       {children}
     </motion.div>
   );
 };
 
-// ─── StaggerContainer ────────────────────────────────────────────────────────
-// Purpose: Orchestrates children to stagger their entry. Used on lists of
-//          cards (issue cards, mode cards) so they read as a sequence,
-//          not a wall of content that appears all at once.
+export const ScaleIn: React.FC<HTMLMotionProps<'div'> & { delay?: number; duration?: number }> = ({ delay = 0, duration = 0.5, children, ...props }) => {
+  const reduced = useReducedMotion();
+  return (
+    <motion.div initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration, delay, ease: ease.smooth }} {...props}>
+      {children}
+    </motion.div>
+  );
+};
 
-interface StaggerContainerProps extends HTMLMotionProps<'div'> {
-  staggerDelay?: number;
-  children: React.ReactNode;
-}
+export const BlurIn: React.FC<HTMLMotionProps<'div'> & { delay?: number; duration?: number }> = ({ delay = 0, duration = 0.6, children, ...props }) => {
+  const reduced = useReducedMotion();
+  return (
+    <motion.div initial={reduced ? { opacity: 0 } : { opacity: 0, filter: 'blur(8px)' }} animate={{ opacity: 1, filter: 'blur(0px)' }} transition={{ duration, delay, ease: ease.smooth }} {...props}>
+      {children}
+    </motion.div>
+  );
+};
 
-const staggerVariants: Variants = {
+// ─── Stagger Orchestrators ────────────────────────────────────────────────
+
+const heroVariants: Variants = {
   hidden: {},
-  visible: (staggerDelay: number) => ({
-    transition: { staggerChildren: staggerDelay },
-  }),
+  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.2 } },
 };
 
-export const StaggerContainer: React.FC<StaggerContainerProps> = ({
-  staggerDelay = 0.07,
-  children,
-  ...props
-}) => (
-  <motion.div
-    variants={staggerVariants}
-    initial="hidden"
-    animate="visible"
-    custom={staggerDelay}
-    {...props}
-  >
-    {children}
-  </motion.div>
-);
-
-export const staggerChildVariants: Variants = {
-  hidden: { opacity: 0, y: 12, filter: 'blur(4px)' },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: { duration: 0.45, ease: ease.smooth },
-  },
+const heroChildVariants: Variants = {
+  hidden: { opacity: 0, y: 16, filter: 'blur(4px)' },
+  visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.7, ease: ease.smooth } },
 };
 
-// ─── StaggerChild ────────────────────────────────────────────────────────────
-
-export const StaggerChild: React.FC<HTMLMotionProps<'div'> & { children: React.ReactNode }> = ({
-  children,
-  ...props
-}) => (
-  <motion.div variants={staggerChildVariants} {...props}>
-    {children}
-  </motion.div>
-);
-
-// ─── HoverCard ───────────────────────────────────────────────────────────────
-// Purpose: Adds a subtle lift + shadow deepening on hover. Signals
-//          interactivity for cards that are clickable or highlightable.
-//          The scale is intentionally tiny (1.005) — enough to feel alive,
-//          not enough to feel like a bounce toy.
-
-interface HoverCardProps extends HTMLMotionProps<'div'> {
-  children: React.ReactNode;
-  lift?: number;
-}
-
-export const HoverCard: React.FC<HoverCardProps> = ({
-  children,
-  lift = 2,
-  ...props
-}) => {
+export const HeroReveal: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => {
   const reduced = useReducedMotion();
+  if (reduced) return <div className={className}>{children}</div>;
+  
   return (
-    <motion.div
-      whileHover={reduced ? {} : { y: -lift, scale: 1.005 }}
-      transition={ease.spring}
-      {...props}
-    >
-      {children}
+    <motion.div variants={heroVariants} initial="hidden" animate="visible" className={className}>
+      {React.Children.map(children, (child) => (
+        <motion.div variants={heroChildVariants}>{child}</motion.div>
+      ))}
     </motion.div>
   );
 };
 
-// ─── TiltCard ────────────────────────────────────────────────────────────────
-// Purpose: Mouse-tracked 3D tilt for the hero image. Creates a sense of
-//          depth and physicality — the interface feels like an object in space,
-//          not a flat diagram. This is the "handcrafted" moment.
+const cardVariants: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08 } },
+};
 
-interface TiltCardProps {
-  children: React.ReactNode;
-  className?: string;
-  intensity?: number;
-}
+const cardChildVariants: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: ease.smooth } },
+};
 
-export const TiltCard: React.FC<TiltCardProps> = ({
-  children,
-  className,
-  intensity = 8,
-}) => {
+export const CardReveal: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => {
   const reduced = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  const rotateX = useTransform(y, [-0.5, 0.5], [intensity, -intensity]);
-  const rotateY = useTransform(x, [-0.5, 0.5], [-intensity, intensity]);
-
-  const springX = useSpring(rotateX, { stiffness: 200, damping: 30 });
-  const springY = useSpring(rotateY, { stiffness: 200, damping: 30 });
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current || reduced) return;
-    const rect = ref.current.getBoundingClientRect();
-    x.set((e.clientX - rect.left) / rect.width - 0.5);
-    y.set((e.clientY - rect.top) / rect.height - 0.5);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
   return (
-    <motion.div
-      ref={ref}
-      className={className}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={reduced ? {} : { rotateX: springX, rotateY: springY, transformStyle: 'preserve-3d' }}
-    >
-      {children}
+    <motion.div variants={cardVariants} initial="hidden" animate="visible" className={className}>
+      {React.Children.map(children, (child) => (
+        <motion.div variants={cardChildVariants}>{child}</motion.div>
+      ))}
     </motion.div>
   );
 };
 
-// ─── MagneticButton ──────────────────────────────────────────────────────────
-// Purpose: Subtle magnetic pull toward cursor on hover. Used on primary CTA
-//          buttons. This is a "premium feel" micro-interaction — signals that
-//          clicking is rewarding, not just functional.
+export const ReportReveal = CardReveal;
 
-interface MagneticButtonProps {
-  children: React.ReactNode;
-  className?: string;
-  strength?: number;
-}
+// ─── Interactive Elements ──────────────────────────────────────────────────
 
-export const MagneticButton: React.FC<MagneticButtonProps> = ({
-  children,
-  className,
-  strength = 0.25,
-}) => {
+export const MagneticButton: React.FC<HTMLMotionProps<'button'> & { strength?: number }> = ({ children, strength = 0.2, className, ...props }) => {
   const reduced = useReducedMotion();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const springX = useSpring(x, { stiffness: 400, damping: 25 });
   const springY = useSpring(y, { stiffness: 400, damping: 25 });
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (reduced) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
@@ -264,163 +137,123 @@ export const MagneticButton: React.FC<MagneticButtonProps> = ({
   };
 
   return (
-    <motion.div
-      className={className}
+    <motion.button
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      whileHover={reduced ? {} : { scale: 1.02 }}
+      whileTap={reduced ? {} : { scale: 0.98 }}
       style={{ x: springX, y: springY }}
-    >
-      {children}
-    </motion.div>
-  );
-};
-
-// ─── CountUp ─────────────────────────────────────────────────────────────────
-// Purpose: Animates a number from 0 to target. Used for the overall score.
-//          The counting motion makes the number feel earned — a reward for
-//          waiting through the analysis, not just a static output.
-
-interface CountUpProps {
-  value: number;
-  duration?: number;
-  className?: string;
-}
-
-export const CountUp: React.FC<CountUpProps> = ({
-  value,
-  duration = 1.4,
-  className,
-}) => {
-  const reduced = useReducedMotion();
-  const count = useMotionValue(0);
-  const rounded = useTransform(count, (v) => Math.round(v));
-  const springCount = useSpring(count, {
-    stiffness: reduced ? 10000 : 80,
-    damping: reduced ? 100 : 20,
-  });
-
-  React.useEffect(() => {
-    springCount.set(value);
-  }, [value, springCount]);
-
-  return (
-    <motion.span className={className}>
-      {useTransformDisplay(springCount)}
-    </motion.span>
-  );
-};
-
-// Helper for CountUp to display formatted spring value
-function useTransformDisplay(motionVal: ReturnType<typeof useSpring>) {
-  const [display, setDisplay] = React.useState(0);
-  React.useEffect(() => {
-    return motionVal.on('change', (v) => setDisplay(Math.round(v)));
-  }, [motionVal]);
-  return display;
-}
-
-// ─── FloatingElement ─────────────────────────────────────────────────────────
-// Purpose: Gentle infinite float animation. Used for UI annotation cards in
-//          the hero image to make them feel like live, breathing elements.
-//          Float speed varies per element so they don't move in lockstep.
-
-interface FloatingElementProps {
-  children: React.ReactNode;
-  className?: string;
-  duration?: number;
-  amplitude?: number;
-  delay?: number;
-}
-
-export const FloatingElement: React.FC<FloatingElementProps> = ({
-  children,
-  className,
-  duration = 5,
-  amplitude = 8,
-  delay = 0,
-}) => {
-  const reduced = useReducedMotion();
-  return (
-    <motion.div
+      animate={reduced ? {} : { scale: [1, 1.01, 1] }}
+      transition={{ scale: { repeat: Infinity, duration: 4, ease: 'easeInOut' } }} // breathing logic
       className={className}
-      animate={reduced ? {} : {
-        y: [0, -amplitude, 0],
-        rotate: [0, 0.5, 0, -0.5, 0],
-      }}
-      transition={{
-        duration,
-        delay,
-        repeat: Infinity,
-        ease: 'easeInOut',
-      }}
+      {...props}
     >
       {children}
-    </motion.div>
+    </motion.button>
   );
 };
 
-// ─── AnimatedBackground ───────────────────────────────────────────────────────
-// Purpose: Slow-moving gradient mesh background. Replaces the static
-//          flat #FAFAF9 background with something that breathes.
-//          Motion is imperceptible except in peripheral vision — creating
-//          a "living" quality without drawing attention.
+export const Spotlight: React.FC<{ children: React.ReactNode; className?: string; color?: string }> = ({ children, className, color = 'rgba(255,255,255,0.06)' }) => {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
 
-export const AnimatedBackground: React.FC<{ className?: string }> = ({ className }) => {
-  const reduced = useReducedMotion();
+  function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
+    const { left, top } = currentTarget.getBoundingClientRect();
+    mouseX.set(clientX - left);
+    mouseY.set(clientY - top);
+  }
+
   return (
-    <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className ?? ''}`} aria-hidden="true">
-      {/* Primary gradient blob */}
+    <div className={`relative group ${className || ''}`} onMouseMove={handleMouseMove}>
       <motion.div
-        className="absolute top-[-20%] left-[10%] w-[600px] h-[600px] rounded-full"
+        className="pointer-events-none absolute -inset-px rounded-xl opacity-0 transition duration-300 group-hover:opacity-100"
         style={{
-          background: 'radial-gradient(circle, rgba(67,56,202,0.06) 0%, transparent 70%)',
-          filter: 'blur(60px)',
+          background: useMotionTemplate`
+            radial-gradient(
+              400px circle at ${mouseX}px ${mouseY}px,
+              ${color},
+              transparent 80%
+            )
+          `,
         }}
-        animate={reduced ? {} : {
-          x: [0, 40, -20, 0],
-          y: [0, -30, 20, 0],
-          scale: [1, 1.1, 0.95, 1],
-        }}
-        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
       />
-      {/* Secondary blob */}
+      {children}
+    </div>
+  );
+};
+
+export const AnimatedBorder: React.FC<{ className?: string }> = ({ className }) => {
+  return (
+    <div className={`absolute inset-0 rounded-2xl pointer-events-none p-[1px] overflow-hidden ${className || ''}`}>
       <motion.div
-        className="absolute bottom-[-10%] right-[5%] w-[500px] h-[500px] rounded-full"
+        className="absolute inset-0"
         style={{
-          background: 'radial-gradient(circle, rgba(99,56,202,0.04) 0%, transparent 70%)',
-          filter: 'blur(80px)',
+          background: 'linear-gradient(90deg, transparent, rgba(6,182,212,0.4), transparent)',
+          backgroundSize: '200% 100%',
         }}
-        animate={reduced ? {} : {
-          x: [0, -30, 15, 0],
-          y: [0, 25, -15, 0],
-          scale: [1, 0.9, 1.08, 1],
-        }}
-        transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut', delay: 4 }}
-      />
-      {/* Noise texture overlay — adds grain, breaks up the "digital" flatness */}
-      <div
-        className="absolute inset-0 opacity-[0.025]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-          backgroundRepeat: 'repeat',
-          backgroundSize: '200px 200px',
-        }}
+        animate={{ backgroundPosition: ['-200% 0%', '200% 0%'] }}
+        transition={{ duration: 4, ease: 'linear', repeat: Infinity }}
       />
     </div>
   );
 };
 
-// ─── SectionTransition ────────────────────────────────────────────────────────
-// Purpose: Wraps major page sections. Fade + slight upward translate as the
-//          section scrolls into view. Establishes a consistent "reading rhythm"
-//          for the page — each section feels like a new thought, not a wall.
+export const CountUp: React.FC<{ value: number; duration?: number; className?: string }> = ({ value, duration = 1.4, className }) => {
+  const reduced = useReducedMotion();
+  const count = useMotionValue(0);
+  const springCount = useSpring(count, { stiffness: reduced ? 10000 : 80, damping: reduced ? 100 : 20 });
+  const [display, setDisplay] = useState(0);
 
-export const SectionTransition: React.FC<{
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
-}> = ({ children, className, delay = 0 }) => (
-  <ScrollReveal delay={delay} distance={32} className={className}>
-    {children}
-  </ScrollReveal>
-);
+  React.useEffect(() => {
+    springCount.set(value);
+  }, [value, springCount]);
+
+  React.useEffect(() => {
+    return springCount.on('change', (v) => setDisplay(Math.round(v)));
+  }, [springCount]);
+
+  return <motion.span className={className}>{display}</motion.span>;
+};
+
+// ─── Background ────────────────────────────────────────────────────────────
+
+export const AnimatedBackground: React.FC = () => {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  
+  React.useEffect(() => {
+    const handleGlobalMouse = (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    };
+    window.addEventListener('mousemove', handleGlobalMouse);
+    return () => window.removeEventListener('mousemove', handleGlobalMouse);
+  }, [mouseX, mouseY]);
+
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none bg-[#09090B] z-0" aria-hidden="true">
+      {/* Subtle global spotlight tracking mouse */}
+      <motion.div
+        className="absolute inset-0 opacity-[0.15]"
+        style={{
+          background: useMotionTemplate`
+            radial-gradient(
+              800px circle at ${mouseX}px ${mouseY}px,
+              rgba(255,255,255,0.03),
+              transparent 80%
+            )
+          `,
+        }}
+      />
+      {/* Noise grain overlay for matte finish */}
+      <div
+        className="absolute inset-0 opacity-[0.015]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '128px 128px',
+        }}
+      />
+    </div>
+  );
+};

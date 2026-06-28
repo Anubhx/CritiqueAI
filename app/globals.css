@@ -4,23 +4,23 @@
 
 /* ─── CSS Custom Properties (design tokens) ─────────────────────────────── */
 :root {
-  /* Core palette — tighter, more intentional than the original */
-  --color-bg:              #09090B;   /* Near-black: feels cinematic vs generic off-white */
+  /* Core palette — deeply matte */
+  --color-bg:              #09090B;   /* Near-black: matte */
   --color-surface:         #111113;   /* Cards sit on this */
   --color-surface-raised:  #18181B;   /* Elevated cards */
   --color-border:          rgba(255,255,255,0.08);
-  --color-border-subtle:   rgba(255,255,255,0.05);
+  --color-border-subtle:   rgba(255,255,255,0.03);
   --color-text-primary:    #FAFAFA;
   --color-text-secondary:  #A1A1AA;
   --color-text-tertiary:   #71717A;
 
-  /* Accent — shifted from generic indigo to a richer violet that reads as "premium" */
-  --color-accent:          #7C3AED;   /* Violet — unique vs the sea of #4338CA SaaS blues */
-  --color-accent-mid:      #6D28D9;
-  --color-accent-glow:     rgba(124,58,237,0.25);
-  --color-accent-surface:  rgba(124,58,237,0.08);
+  /* Accent — Electric Blue / Cyan (V2) */
+  --color-accent:          #06B6D4;   /* Cyan-500 */
+  --color-accent-mid:      #38BDF8;   /* Sky-400 */
+  --color-accent-glow:     rgba(6,182,212,0.25);
+  --color-accent-surface:  rgba(6,182,212,0.08);
 
-  /* Severity — kept semantically correct, adapted to dark theme */
+  /* Severity — semantic */
   --color-critical-text:   #FCA5A5;
   --color-critical-bg:     rgba(239,68,68,0.12);
   --color-critical-border: rgba(239,68,68,0.25);
@@ -67,7 +67,7 @@ body {
 
 /* ─── Selection ──────────────────────────────────────────────────────────── */
 ::selection {
-  background: rgba(124, 58, 237, 0.35);
+  background: rgba(6, 182, 212, 0.35);
   color: #fff;
 }
 
@@ -209,7 +209,7 @@ body {
 }
 
 .text-gradient-accent {
-  background: linear-gradient(135deg, #A78BFA 0%, #7C3AED 50%, #5B21B6 100%);
+  background: linear-gradient(135deg, #67E8F9 0%, #06B6D4 50%, #0891B2 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -282,7 +282,7 @@ body {
 /* ─── Upload zone breathing border ──────────────────────────────────────── */
 @keyframes border-breathe {
   0%, 100% { border-color: rgba(255,255,255,0.08); }
-  50%       { border-color: rgba(124,58,237,0.3); }
+  50%       { border-color: rgba(6,182,212,0.3); }
 }
 
 .border-breathe {

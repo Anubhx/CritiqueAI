@@ -17,11 +17,11 @@ const config: Config = {
         'text-secondary': '#A1A1AA',
         'text-tertiary':  '#71717A',
         accent: {
-          DEFAULT: '#7C3AED',
-          mid:     '#6D28D9',
-          dark:    '#5B21B6',
-          glow:    'rgba(124,58,237,0.25)',
-          surface: 'rgba(124,58,237,0.08)',
+          DEFAULT: '#06B6D4',
+          mid:     '#38BDF8',
+          dark:    '#0891B2',
+          glow:    'rgba(6,182,212,0.25)',
+          surface: 'rgba(6,182,212,0.08)',
         },
         severity: {
           critical: { text: '#FCA5A5', bg: 'rgba(239,68,68,0.12)', border: 'rgba(239,68,68,0.25)' },
@@ -52,9 +52,9 @@ const config: Config = {
         'sm':  '4px',
       },
       boxShadow: {
-        'glow-sm': '0 0 12px rgba(124,58,237,0.25)',
-        'glow-md': '0 0 24px rgba(124,58,237,0.30)',
-        'glow-lg': '0 0 40px rgba(124,58,237,0.25), 0 0 80px rgba(124,58,237,0.12)',
+        'glow-sm': '0 0 12px rgba(6,182,212,0.25)',
+        'glow-md': '0 0 24px rgba(6,182,212,0.30)',
+        'glow-lg': '0 0 40px rgba(6,182,212,0.25), 0 0 80px rgba(6,182,212,0.12)',
         'card':    '0 1px 3px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.3)',
         'card-hover': '0 4px 12px rgba(0,0,0,0.5), 0 8px 32px rgba(0,0,0,0.4)',
         'inner-highlight': 'inset 0 1px 0 rgba(255,255,255,0.06)',
@@ -83,7 +83,7 @@ const config: Config = {
           '50%':     { transform: 'translateY(-8px)' },
         },
         'pulse-ring': {
-          '0%':   { boxShadow: '0 0 0 0 rgba(124,58,237,0.25)' },
+          '0%':   { boxShadow: '0 0 0 0 rgba(6,182,212,0.25)' },
           '70%':  { boxShadow: '0 0 0 10px transparent' },
           '100%': { boxShadow: '0 0 0 0 transparent' },
         },

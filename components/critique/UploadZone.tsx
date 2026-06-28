@@ -1,21 +1,17 @@
 'use client';
 
 /**
- * UploadZone.tsx
+ * UploadZone.tsx (V2)
  *
  * Animation intent:
- *   - Idle: Breathing border animation (border-breathe) signals the zone is alive
- *   - Hover: Border brightens, arrow icon lifts upward (signals "bring here")
- *   - Drag over: Border becomes accent-colored, background tints, scale up slightly
- *   - Drop: Brief "pulse" scale acknowledges the drop before analysis begins
- *   - Success (file selected): Icon morphs to a checkmark, name appears
- *
- * Accessibility: Uses a real <button> semantic role via aria, keyboard works via
- *                Enter/Space, and hidden file input is the actual mechanism.
+ *   - Idle: Wrapped in a Spotlight that creates a subtle light aura tracking the mouse.
+ *   - Hover/Drag over: Card responds physically (lifts, glows cyan).
+ *   - Success (file selected): Smooth morph into checkmark.
  */
 
 import React, { useCallback, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { Spotlight, AnimatedBorder } from '@/components/motion';
 import type { CritiqueMode, CritiqueStatus } from '@/types/critique';
 
 interface UploadZoneProps {
@@ -111,126 +107,112 @@ export const UploadZone: React.FC<UploadZoneProps> = ({
   );
 
   return (
-    <motion.div
-      role="button"
-      aria-label="Screenshot upload zone — drag and drop or click to browse"
-      aria-haspopup="dialog"
-      tabIndex={0}
-      onDrop={handleDrop}
-      onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-      onDragLeave={() => setDragOver(false)}
-      onPaste={handlePaste}
-      onClick={() => fileInputRef.current?.click()}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') fileInputRef.current?.click(); }}
-      animate={reduced ? {} : {
-        scale: dropped ? 1.02 : dragOver ? 1.01 : 1,
-        borderColor: dragOver
-          ? 'rgba(124,58,237,0.6)'
-          : 'rgba(255,255,255,0.08)',
-      }}
-      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-      className={[
-        'relative flex flex-col items-center justify-center gap-3',
-        'min-h-[148px] rounded-xl cursor-pointer',
-        'border transition-colors duration-200',
-        dragOver
-          ? 'bg-[rgba(124,58,237,0.06)]'
-          : 'bg-[rgba(0,0,0,0.20)] hover:bg-[rgba(255,255,255,0.02)]',
-        'border-breathe',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C3AED] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111113]',
-      ].join(' ')}
-    >
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        className="sr-only"
-        onChange={handleFileChange}
-        aria-label="Choose a screenshot file"
-        tabIndex={-1}
-      />
-
-      {/* Upload icon with lift animation on hover */}
+    <Spotlight className="w-full">
       <motion.div
-        animate={reduced ? {} : { y: dragOver ? -4 : 0 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-        className={`transition-colors duration-200 ${dragOver ? 'text-[#A78BFA]' : 'text-[#3F3F46]'}`}
+        role="button"
+        aria-label="Screenshot upload zone — drag and drop or click to browse"
+        aria-haspopup="dialog"
+        tabIndex={0}
+        onDrop={handleDrop}
+        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+        onDragLeave={() => setDragOver(false)}
+        onPaste={handlePaste}
+        onClick={() => fileInputRef.current?.click()}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') fileInputRef.current?.click(); }}
+        animate={reduced ? {} : {
+          scale: dropped ? 1.01 : dragOver ? 1.005 : 1,
+          y: dragOver ? -2 : 0,
+          borderColor: dragOver ? 'rgba(6,182,212,0.4)' : 'rgba(255,255,255,0.08)',
+          backgroundColor: dragOver ? 'rgba(6,182,212,0.04)' : 'rgba(0,0,0,0.3)',
+        }}
+        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+        className="relative flex flex-col items-center justify-center gap-4 min-h-[180px] rounded-2xl cursor-pointer border overflow-hidden backdrop-blur-md shadow-card hover:shadow-card-hover transition-shadow duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#06B6D4] focus-visible:ring-offset-2 focus-visible:ring-offset-[#111113]"
       >
-        <AnimatePresence mode="wait">
-          {fileName ? (
-            // File selected: checkmark morphs in
+        <AnimatedBorder className="opacity-50" />
+        
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="sr-only"
+          onChange={handleFileChange}
+          aria-label="Choose a screenshot file"
+          tabIndex={-1}
+        />
+
+        {/* Custom Icon Group */}
+        <motion.div
+          animate={reduced ? {} : { y: dragOver ? -4 : 0 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+          className={`relative z-10 flex items-center justify-center w-12 h-12 rounded-xl border ${dragOver ? 'border-[#06B6D4] bg-[rgba(6,182,212,0.1)] text-[#38BDF8]' : 'border-[rgba(255,255,255,0.1)] bg-[rgba(255,255,255,0.03)] text-[#A1A1AA]'}`}
+          style={{ boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1)' }}
+        >
+          <AnimatePresence mode="wait">
+            {fileName ? (
+              <motion.div
+                key="check"
+                initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.6 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.6 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+              </motion.div>
+            ) : (
+              <motion.div key="upload" initial={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                {/* Custom sleek upload icon instead of Lucide default */}
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 17V3" />
+                  <path d="m7 8 5-5 5 5" />
+                  <path d="M20 21H4" />
+                </svg>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        <div className="relative z-10 text-center px-4">
+          <AnimatePresence mode="wait">
+            {fileName ? (
+              <motion.p
+                key="filename"
+                initial={reduced ? { opacity: 0 } : { opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-[14px] font-medium text-[#FAFAFA] truncate max-w-[280px]"
+              >
+                {fileName}
+              </motion.p>
+            ) : (
+              <motion.p
+                key="default"
+                initial={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="text-[14px] font-medium text-[#A1A1AA]"
+              >
+                {dragOver ? 'Drop screenshot here' : 'Drop screenshot, paste, or '}
+                {!dragOver && <span className="text-[#38BDF8] font-medium cursor-pointer">browse</span>}
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Outer Glow Ring on Drag */}
+        <AnimatePresence>
+          {dragOver && (
             <motion.div
-              key="check"
-              initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.6 }}
+              initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.6 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-              className="text-[#A78BFA]"
-            >
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                <polyline points="22 4 12 14.01 9 11.01" />
-              </svg>
-            </motion.div>
-          ) : (
-            // Default: upload arrow
-            <motion.div key="upload" initial={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="17 8 12 3 7 8" />
-                <line x1="12" y1="3" x2="12" y2="15" />
-              </svg>
-            </motion.div>
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="absolute inset-0 rounded-2xl pointer-events-none"
+              style={{ boxShadow: '0 0 40px rgba(6,182,212,0.2) inset, 0 0 0 1px #06B6D4 inset' }}
+              aria-hidden="true"
+            />
           )}
         </AnimatePresence>
       </motion.div>
-
-      {/* Text content */}
-      <div className="text-center px-4">
-        <AnimatePresence mode="wait">
-          {fileName ? (
-            <motion.p
-              key="filename"
-              initial={reduced ? { opacity: 0 } : { opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-[14px] font-medium text-[#E4E4E7] truncate max-w-[220px]"
-            >
-              {fileName}
-            </motion.p>
-          ) : (
-            <motion.p
-              key="default"
-              initial={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-[14px] font-medium text-[#71717A]"
-            >
-              {dragOver ? 'Drop to analyze' : 'Drag & drop, paste, or'}
-            </motion.p>
-          )}
-        </AnimatePresence>
-
-        {!fileName && !dragOver && (
-          <p className="text-[12px] text-[#3F3F46] mt-1">
-            <span className="text-[#7C3AED] underline underline-offset-2">browse files</span>
-            {' · '}JPG, PNG, WebP · max 10 MB
-          </p>
-        )}
-      </div>
-
-      {/* Drag overlay ring — accent border ripple */}
-      <AnimatePresence>
-        {dragOver && (
-          <motion.div
-            initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="absolute inset-0 rounded-xl pointer-events-none border-2 border-[#7C3AED]"
-            style={{ boxShadow: '0 0 20px rgba(124,58,237,0.20) inset' }}
-            aria-hidden="true"
-          />
-        )}
-      </AnimatePresence>
-    </motion.div>
+    </Spotlight>
   );
 };
 

@@ -128,7 +128,7 @@ export const AnnotatedScreenshot: React.FC<AnnotatedScreenshotProps> = ({
                   animate={{ scale: 2, opacity: 0 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.6, repeat: Infinity }}
-                  style={{ backgroundColor: '#7C3AED' }}
+                  style={{ backgroundColor: '#06B6D4' }}
                   aria-hidden="true"
                 />
               )}
@@ -138,7 +138,7 @@ export const AnnotatedScreenshot: React.FC<AnnotatedScreenshotProps> = ({
             <motion.div
               animate={{
                 scale: isHighlighted ? 1.25 : 1,
-                backgroundColor: isHighlighted ? '#7C3AED' : 'rgba(124,58,237,0.85)',
+                backgroundColor: isHighlighted ? '#06B6D4' : 'rgba(6,182,212,0.85)',
               }}
               transition={{ type: 'spring', stiffness: 400, damping: 25 }}
               className="w-6 h-6 rounded-full border-2 border-white/20 flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
@@ -158,8 +158,8 @@ export const AnnotatedScreenshot: React.FC<AnnotatedScreenshotProps> = ({
       >
         <defs>
           <linearGradient id="line-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#7C3AED" stopOpacity="0.7" />
-            <stop offset="100%" stopColor="#7C3AED" stopOpacity="0" />
+            <stop offset="0%" stopColor="#06B6D4" stopOpacity="0.7" />
+            <stop offset="100%" stopColor="#06B6D4" stopOpacity="0" />
           </linearGradient>
         </defs>
         {markers.map((marker) => {

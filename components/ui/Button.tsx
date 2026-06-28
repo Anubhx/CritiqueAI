@@ -27,11 +27,13 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary: [
     'relative overflow-hidden',
-    'bg-gradient-to-b from-[#8B5CF6] to-[#7C3AED]',
-    'text-white font-semibold',
-    'shadow-[0_1px_0_rgba(255,255,255,0.15)_inset,0_2px_8px_rgba(124,58,237,0.35)]',
-    'hover:shadow-[0_1px_0_rgba(255,255,255,0.20)_inset,0_4px_16px_rgba(124,58,237,0.45)]',
-    'disabled:from-[#27272A] disabled:to-[#27272A] disabled:text-[#52525B]',
+    'bg-[#06B6D4] text-[#FAFAFA]',
+    'hover:bg-[#0891B2]',
+    'active:bg-[#164E63]',
+    'shadow-[0_2px_12px_rgba(6,182,212,0.3)]',
+    'hover:shadow-[0_4px_20px_rgba(6,182,212,0.4)]',
+    'border border-[#67E8F9]/30',
+    'disabled:bg-[#27272A] disabled:text-[#52525B]',
     'disabled:shadow-none disabled:cursor-not-allowed',
   ].join(' '),
   secondary: [
