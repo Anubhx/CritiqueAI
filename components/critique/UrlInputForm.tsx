@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import type { CritiqueMode, CritiqueStatus } from '@/types/critique';
 
@@ -20,6 +21,8 @@ export const UrlInputForm: React.FC<UrlInputFormProps> = ({
   const [url, setUrl] = useState('');
   const [validationError, setValidationError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const reduced = useReducedMotion();
 
   const validate = (val: string): boolean => {
     try {
@@ -35,12 +38,9 @@ export const UrlInputForm: React.FC<UrlInputFormProps> = ({
       e.preventDefault();
       setValidationError(null);
 
-      if (!url.trim()) {
-        setValidationError('Please enter a URL.');
-        return;
-      }
+      if (!url.trim()) { setValidationError('Enter a URL to analyze.'); return; }
       if (!validate(url.trim())) {
-        setValidationError('That URL doesn\'t look valid. Make sure it starts with https://');
+        setValidationError('URL needs to start with https:// or http://');
         return;
       }
 
@@ -58,16 +58,16 @@ export const UrlInputForm: React.FC<UrlInputFormProps> = ({
         const data = await res.json();
 
         if (!res.ok) {
-          onError(data.error ?? 'Something went wrong. Try again.');
+          onError(data.error ?? 'Capture failed. Try another URL.');
           setIsLoading(false);
           return;
         }
 
         onAnalysisStart('structuring');
-        await new Promise((r) => setTimeout(r, 600));
+        await new Promise((r) => setTimeout(r, 500));
         onSuccess(data.report, data.imageBase64, data.mimeType);
       } catch {
-        onError('Something went wrong generating your critique. Try again in a moment.');
+        onError('Something went wrong. Check your connection and try again.');
       } finally {
         setIsLoading(false);
       }
@@ -77,44 +77,81 @@ export const UrlInputForm: React.FC<UrlInputFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3" noValidate>
+      {/* Visible label */}
+      <label htmlFor="url-input" className="text-[12px] font-medium text-[#71717A]">
+        Website URL
+      </label>
+
       <div className="flex gap-2">
-        <label htmlFor="url-input" className="sr-only">
-          Website URL
-        </label>
-        <input
-          id="url-input"
-          type="url"
-          value={url}
-          onChange={(e) => {
-            setUrl(e.target.value);
-            setValidationError(null);
-          }}
-          placeholder="https://example.com"
-          disabled={isLoading}
-          autoComplete="url"
-          className={`
-            flex-1 px-3 py-2 text-[15px] rounded-md border bg-white
-            placeholder-[#A8A29E] text-[#1C1917]
-            transition-colors duration-150
-            disabled:bg-[#F5F5F4] disabled:cursor-not-allowed
-            ${validationError
-              ? 'border-[#791F1F] focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#791F1F]'
-              : 'border-[#E7E5E4] focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4338CA]'
-            }
-          `}
-          aria-invalid={validationError ? 'true' : 'false'}
-          aria-describedby={validationError ? 'url-error' : undefined}
-        />
+        <div className="relative flex-1">
+          {/* Animated focus ring glow — signals "this is where you type" */}
+          {isFocused && !reduced && (
+            <motion.div
+              layoutId="url-focus-ring"
+              className="absolute -inset-[2px] rounded-xl pointer-events-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              style={{
+                background: validationError
+                  ? 'rgba(239,68,68,0.15)'
+                  : 'rgba(124,58,237,0.12)',
+                boxShadow: validationError
+                  ? '0 0 0 1.5px rgba(239,68,68,0.50)'
+                  : '0 0 0 1.5px rgba(124,58,237,0.50)',
+                borderRadius: '12px',
+              }}
+              aria-hidden="true"
+            />
+          )}
+          <input
+            id="url-input"
+            type="url"
+            value={url}
+            onChange={(e) => { setUrl(e.target.value); setValidationError(null); }}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            placeholder="https://example.com"
+            disabled={isLoading}
+            autoComplete="url"
+            aria-invalid={validationError ? 'true' : 'false'}
+            aria-describedby={validationError ? 'url-error' : undefined}
+            className={[
+              'relative w-full px-3 py-2 text-[14px] rounded-xl',
+              'bg-[rgba(0,0,0,0.30)] border text-[#E4E4E7]',
+              'placeholder-[#3F3F46]',
+              'transition-colors duration-150',
+              'focus:outline-none',
+              'disabled:opacity-50 disabled:cursor-not-allowed',
+              validationError
+                ? 'border-[rgba(239,68,68,0.40)]'
+                : 'border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.14)]',
+            ].join(' ')}
+          />
+        </div>
         <Button type="submit" loading={isLoading} disabled={isLoading}>
-          Capture &amp; analyze
+          Analyze
         </Button>
       </div>
 
-      {validationError && (
-        <p id="url-error" role="alert" className="text-[13px] text-[#791F1F]">
-          {validationError}
-        </p>
-      )}
+      {/* Error message */}
+      <AnimatePresence>
+        {validationError && (
+          <motion.p
+            id="url-error"
+            role="alert"
+            initial={reduced ? { opacity: 0 } : { opacity: 0, y: -4, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: 'auto' }}
+            exit={{ opacity: 0, y: -4, height: 0 }}
+            className="text-[12px] text-[#FCA5A5] flex items-center gap-1.5"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            {validationError}
+          </motion.p>
+        )}
+      </AnimatePresence>
     </form>
   );
 };

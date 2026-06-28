@@ -1,11 +1,20 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 
 const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-inter',
+});
+
+// Moved from Google Fonts <link> (render-blocking) to next/font (zero FOUT)
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400', '500', '600'],
+  variable: '--font-mono',
 });
 
 export const metadata: Metadata = {
@@ -32,14 +41,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="bg-[#FAFAF9] text-[#1C1917] antialiased">{children}</body>
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+      <body className="bg-[#09090B] text-[#FAFAFA] antialiased">{children}</body>
     </html>
   );
 }
